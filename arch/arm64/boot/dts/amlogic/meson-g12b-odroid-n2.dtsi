@@ -12,13 +12,10 @@
 / {
 	aliases {
 		serial0 = &uart_AO;
-		serial1 = &uart_A;
 		ethernet0 = &ethmac;
-		rtc0 = &rtc;
-		rtc1 = &vrtc;
 	};
 
-	dio2133: audio-amplifier-0 {
+	dioo2133: audio-amplifier-0 {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
 		VCC-supply = <&vcc_5v>;
@@ -38,28 +35,6 @@
 	emmc_pwrseq: emmc-pwrseq {
 		compatible = "mmc-pwrseq-emmc";
 		reset-gpios = <&gpio BOOT_12 GPIO_ACTIVE_LOW>;
-	};
-
-	/*
-	 * 5V 80x80x10.8mm cooling fan from Hardkernel shop.
-	 */
-	fan0: gpio-fan {
-		#cooling-cells = <2>;
-		compatible = "gpio-fan";
-		gpio-fan,speed-map = <0 0 1600 1>;
-		gpios = <&gpio_ao GPIOAO_10 GPIO_ACTIVE_HIGH>;
-		status = "okay";
-	};
-
-	gpio-keys-polled {
-		compatible = "gpio-keys-polled";
-		poll-interval = <100>;
-
-		power-button {
-			label = "power";
-			linux,code = <KEY_POWER>;
-			gpios = <&gpio GPIOX_3 GPIO_ACTIVE_LOW>;
-		};
 	};
 
 	leds {
@@ -153,7 +128,7 @@
 		regulator-min-microvolt = <721000>;
 		regulator-max-microvolt = <1022000>;
 
-		pwm-supply = <&main_12v>;
+		vin-supply = <&main_12v>;
 
 		pwms = <&pwm_ab 0 1250 0>;
 		pwm-dutycycle-range = <100 0>;
@@ -172,7 +147,7 @@
 		regulator-min-microvolt = <721000>;
 		regulator-max-microvolt = <1022000>;
 
-		pwm-supply = <&main_12v>;
+		vin-supply = <&main_12v>;
 
 		pwms = <&pwm_AO_cd 1 1250 0>;
 		pwm-dutycycle-range = <100 0>;
@@ -240,7 +215,7 @@
 		audio-widgets = "Line", "Lineout";
 		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&tdmin_a>,
 				 <&tdmin_b>, <&tdmin_c>, <&tdmin_lb>,
-				 <&dio2133>;
+				 <&dioo2133>;
 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
@@ -389,50 +364,11 @@
 	status = "okay";
 };
 
-&cpu_thermal {
-	trips {
-		cpu_warm: cpu_warm {
-			hysteresis = <5000>;
-			temperature = <30000>;
-			type = "active";
-		};
-	};
-
-	cooling-maps {
-		map0 {
-			cooling-device =
-				<&fan0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-			trip = <&cpu_warm>;
-		};
-		map1 {
-			trip = <&cpu_passive>;
-			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu100 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu101 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu102 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu103 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&fan0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-		};
-		map2 {
-			trip = <&cpu_hot>;
-			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu100 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu101 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu102 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu103 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&fan0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-		};
-	};
-};
-
 &cpu0 {
 	cpu-supply = <&vddcpu_b>;
 	operating-points-v2 = <&cpu_opp_table_0>;
 	clocks = <&clkc CLKID_CPU_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
 };
 
 &cpu1 {
@@ -440,7 +376,6 @@
 	operating-points-v2 = <&cpu_opp_table_0>;
 	clocks = <&clkc CLKID_CPU_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
 };
 
 &cpu100 {
@@ -448,7 +383,6 @@
 	operating-points-v2 = <&cpub_opp_table_1>;
 	clocks = <&clkc CLKID_CPUB_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
 };
 
 &cpu101 {
@@ -456,7 +390,6 @@
 	operating-points-v2 = <&cpub_opp_table_1>;
 	clocks = <&clkc CLKID_CPUB_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
 };
 
 &cpu102 {
@@ -464,7 +397,6 @@
 	operating-points-v2 = <&cpub_opp_table_1>;
 	clocks = <&clkc CLKID_CPUB_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
 };
 
 &cpu103 {
@@ -472,31 +404,6 @@
 	operating-points-v2 = <&cpub_opp_table_1>;
 	clocks = <&clkc CLKID_CPUB_CLK>;
 	clock-latency = <50000>;
-	#cooling-cells = <2>;
-};
-
-&cpu_thermal {
-	trips {
-		cpu_passive: cpu-passive {
-			temperature = <70000>; /* millicelsius */
-			hysteresis = <2000>; /* millicelsius */
-			type = "passive";
-		};
-	};
-	cooling-maps {
-		cpufreq_map0 {
-			trip = <&cpu_passive>;
-			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-		};
-		cpufreq_map1 {
-			trip = <&cpu_passive>;
-			cooling-device = <&cpu100 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu101 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu102 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu103 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
-		};
-	};
 };
 
 &ext_mdio {
@@ -537,51 +444,6 @@
 };
 
 &gpio {
-	gpio-line-names =
-		/* GPIOZ */
-		"", "", "", "", "", "", "", "",
-		"", "", "", "", "", "", "", "",
-		/* GPIOH */
-		"", "", "", "", "", "", "", "",
-		"",
-		/* BOOT */
-		"", "", "", "", "", "", "", "",
-		"", "", "", "", "", "", "", "",
-		/* GPIOC */
-		"", "", "", "", "", "", "", "",
-		/* GPIOA */
-		"PIN_44", /* GPIOA_0 */
-		"PIN_46", /* GPIOA_1 */
-		"PIN_45", /* GPIOA_2 */
-		"PIN_47", /* GPIOA_3 */
-		"PIN_26", /* GPIOA_4 */
-		"", "", "", "", "", "",
-		"PIN_42", /* GPIOA_11 */
-		"PIN_32", /* GPIOA_12 */
-		"PIN_7",  /* GPIOA_13 */
-		"PIN_27", /* GPIOA_14 */
-		"PIN_28", /* GPIOA_15 */
-		/* GPIOX */
-		"PIN_16", /* GPIOX_0 */
-		"PIN_18", /* GPIOX_1 */
-		"PIN_22", /* GPIOX_2 */
-		"PIN_11", /* GPIOX_3 */
-		"PIN_13", /* GPIOX_4 */
-		"PIN_33", /* GPIOX_5 */
-		"PIN_35", /* GPIOX_6 */
-		"PIN_15", /* GPIOX_7 */
-		"PIN_19", /* GPIOX_8 */
-		"PIN_21", /* GPIOX_9 */
-		"PIN_24", /* GPIOX_10 */
-		"PIN_23", /* GPIOX_11 */
-		"PIN_8",  /* GPIOX_12 */
-		"PIN_10", /* GPIOX_13 */
-		"PIN_29", /* GPIOX_14 */
-		"PIN_31", /* GPIOX_15 */
-		"PIN_12", /* GPIOX_16 */
-		"PIN_3",  /* GPIOX_17 */
-		"PIN_5",  /* GPIOX_18 */
-		"PIN_36"; /* GPIOX_19 */
 	/*
 	 * WARNING: The USB Hub on the Odroid-N2 needs a reset signal
 	 * to be turned high in order to be detected by the USB Controller
@@ -616,24 +478,6 @@
 	linux,rc-map-name = "rc-odroid";
 };
 
-&i2c2 {
-	status = "okay";
-	pinctrl-0 = <&i2c2_sda_x_pins>, <&i2c2_sck_x_pins>;
-	pinctrl-names = "default";
-};
-
-&i2c3 {
-	status = "okay";
-	pinctrl-0 = <&i2c3_sda_a_pins>, <&i2c3_sck_a_pins>;
-	pinctrl-names = "default";
-
-	rtc: rtc@51 {
-		compatible = "nxp,pcf8563";
-		reg = <0x51>;
-		wakeup-source;
-	};
-};
-
 &pwm_ab {
 	pinctrl-0 = <&pwm_a_e_pins>;
 	pinctrl-names = "default";
@@ -648,11 +492,6 @@
 	clocks = <&xtal>;
 	clock-names = "clkin1";
 	status = "okay";
-};
-
-&saradc {
-	status = "okay";
-	vref-supply = <&vddao_1v8>;
 };
 
 /* SD card */
@@ -704,7 +543,7 @@
 	pinctrl-0 = <&nor_pins>;
 	pinctrl-names = "default";
 
-	mx25u64: flash@0 {
+	mx25u64: spi-flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "mxicy,mx25u6435f", "jedec,spi-nor";
@@ -763,12 +602,6 @@
 
 &toddr_c {
 	status = "okay";
-};
-
-&uart_A {
-	status = "okay";
-	pinctrl-0 = <&uart_a_pins>;
-	pinctrl-names = "default";
 };
 
 &uart_AO {

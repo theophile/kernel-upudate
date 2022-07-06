@@ -47,19 +47,7 @@
 		reset-gpios = <&gpio BOOT_9 GPIO_ACTIVE_LOW>;
 	};
 
-	fan {
-		compatible = "fanctl";
-		fan_ctl0 = <&gpio GPIODV_14 GPIO_ACTIVE_HIGH>;
-		fan_ctl1 = <&gpio GPIODV_15 GPIO_ACTIVE_HIGH>;
-		trig_temp_level0 = <50>;
-		trig_temp_level1 = <60>;
-		trig_temp_level2 = <70>;
-		hwver = "VIM2.V12"; /* Will be updated in uboot. */
-		status = "okay";
-	};
-
 	gpio_fan: gpio-fan {
-		status = "disabled";
 		compatible = "gpio-fan";
 		gpios = <&gpio GPIODV_14 GPIO_ACTIVE_HIGH
 			 &gpio GPIODV_15 GPIO_ACTIVE_HIGH>;
@@ -241,22 +229,12 @@
 
 	rtc: rtc@51 {
 		/* has to be enabled manually when a battery is connected: */
-		status = "okay";
+		status = "disabled";
 		compatible = "haoyu,hym8563";
 		reg = <0x51>;
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 		clock-output-names = "xin32k";
-	};
-
-	khadas-mcu@18 {
-		status = "okay";
-		compatible = "khadas-mcu";
-		reg = <0x18>;
-		fan,trig_temp_level0 = <50>;
-		fan,trig_temp_level1 = <60>;
-		fan,trig_temp_level2 = <70>;
-		hwver = "VIM2.V12"; /* Will be updated in uboot. */
 	};
 };
 
@@ -292,8 +270,7 @@
 	#size-cells = <0>;
 
 	bus-width = <4>;
-	cap-sd-highspeed;
-	max-frequency = <100000000>;
+	max-frequency = <60000000>;
 
 	non-removable;
 	disable-wp;
