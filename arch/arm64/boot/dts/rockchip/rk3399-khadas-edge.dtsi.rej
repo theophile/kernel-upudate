@@ -1,0 +1,10 @@
+--- arch/arm64/boot/dts/rockchip/rk3399-khadas-edge.dtsi
++++ arch/arm64/boot/dts/rockchip/rk3399-khadas-edge.dtsi
+@@ -705,7 +705,6 @@ &sdmmc {
+ &sdhci {
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+-	mmc-hs400-enhanced-strobe;
+ 	non-removable;
+ 	status = "okay";
+ };
