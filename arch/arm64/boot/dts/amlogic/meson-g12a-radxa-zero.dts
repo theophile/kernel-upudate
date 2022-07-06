@@ -40,6 +40,17 @@
                 timeout-ms = <20000>;
         };
 
+        gpio-keys-polled {
+                compatible = "gpio-keys-polled";
+                poll-interval = <100>;
+
+                power-button {
+                        label = "power";
+                        linux,code = <KEY_POWER>;
+                        gpios = <&gpio_ao GPIOAO_3 (GPIO_ACTIVE_LOW)>;
+                };
+        };
+
 	cvbs-connector {
 		status = "disabled";
 		compatible = "composite-video-connector";
