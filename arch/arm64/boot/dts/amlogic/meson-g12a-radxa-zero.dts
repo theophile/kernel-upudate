@@ -34,6 +34,12 @@
 		reg = <0x0 0x0 0x0 0x40000000>;
 	};
 
+        gpio-poweroff {
+                compatible = "gpio-poweroff";
+                gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
+                timeout-ms = <20000>;
+        };
+
 	cvbs-connector {
 		status = "disabled";
 		compatible = "composite-video-connector";
